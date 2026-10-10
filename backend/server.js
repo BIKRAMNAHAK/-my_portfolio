@@ -50,17 +50,17 @@ app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'Portfolio API is running' });
 });
 
-app.use('/api/auth', authRoutes);
-app.use('/api/projects', projectRoutes);
-app.use('/api/skills', skillRoutes);
-app.use('/api/experiences', experienceRoutes);
-app.use('/api/about', aboutRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/resume', resumeRoutes);
-app.use('/api/resumes', resumesRoutes);
-app.use('/api/social', socialRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/visitors', visitorRoutes);
+app.use(['/api/auth', '/auth'], authRoutes);
+app.use(['/api/projects', '/projects'], projectRoutes);
+app.use(['/api/skills', '/skills'], skillRoutes);
+app.use(['/api/experiences', '/experiences'], experienceRoutes);
+app.use(['/api/about', '/about'], aboutRoutes);
+app.use(['/api/messages', '/messages'], messageRoutes);
+app.use(['/api/resume', '/resume'], resumeRoutes);
+app.use(['/api/resumes', '/resumes'], resumesRoutes);
+app.use(['/api/social', '/social'], socialRoutes);
+app.use(['/api/dashboard', '/dashboard'], dashboardRoutes);
+app.use(['/api/visitors', '/visitors'], visitorRoutes);
 
 app.use((req, res, next) => {
   res.status(404).json({ success: false, message: `Route not found: ${req.originalUrl}` });
