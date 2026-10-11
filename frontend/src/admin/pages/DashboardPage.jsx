@@ -179,10 +179,11 @@ export default function DashboardPage() {
                         <tr key={m._id}>
                           <td style={{ width: '48px', paddingLeft: '1.25rem' }}>
                             <div
-                              className="rounded-circle d-grid place-items-center fw-bold text-white small"
+                              className="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white small"
                               style={{
                                 width: '34px',
                                 height: '34px',
+                                minWidth: '34px',
                                 backgroundColor: m.status === 'unread' ? '#7c3aed' : '#94a3b8',
                               }}
                             >

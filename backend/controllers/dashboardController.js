@@ -6,18 +6,19 @@ const Visitor = require('../models/Visitor');
 const asyncHandler = require('../utils/asyncHandler');
 
 const getStats = asyncHandler(async (req, res) => {
-  const [projects, skills, experiences, messages, unreadMessages, visitors, todayVisitors] =
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const [projects, skills, experiences, messages, unreadMessages, uniqueIps, todayVisitors] =
     await Promise.all([
       Project.countDocuments(),
       Skill.countDocuments(),
       Experience.countDocuments(),
       Message.countDocuments(),
       Message.countDocuments({ status: 'unread' }),
-      Visitor.countDocuments(),
+      Visitor.distinct('ip'),
       Visitor.countDocuments({
-        date: {
-          $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-        },
+        date: { $gte: startOfDay },
       }),
     ]);
 
@@ -29,7 +30,7 @@ const getStats = asyncHandler(async (req, res) => {
       experiences,
       messages,
       unreadMessages,
-      visitors,
+      visitors: uniqueIps.length,
       todayVisitors,
     },
   });
@@ -68,13 +69,26 @@ const getVisitors = asyncHandler(async (req, res) => {
 const trackVisitor = asyncHandler(async (req, res) => {
   const ip =
     req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+    req.headers['x-real-ip'] ||
     req.socket.remoteAddress ||
-    '';
+    'anonymous';
   const userAgent = req.headers['user-agent'] || '';
 
-  const visitor = await Visitor.create({ ip, userAgent, date: new Date() });
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
 
-  res.status(201).json({ success: true, data: visitor });
+  // Check if same IP already recorded today
+  const existingToday = await Visitor.findOne({
+    ip,
+    date: { $gte: startOfDay },
+  });
+
+  if (!existingToday) {
+    const visitor = await Visitor.create({ ip, userAgent, date: new Date() });
+    return res.status(201).json({ success: true, isNew: true, data: visitor });
+  }
+
+  res.json({ success: true, isNew: false, message: 'Visit already recorded today' });
 });
 
 module.exports = { getStats, getVisitors, trackVisitor };

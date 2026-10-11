@@ -67,6 +67,17 @@ export default function HomePage() {
   const [sentSuccess, setSentSuccess] = useState(false)
 
   useEffect(() => {
+    // Record public visitor analytics (once per browsing session)
+    try {
+      const hasTracked = sessionStorage.getItem('portfolio_visited')
+      if (!hasTracked) {
+        api.post('/visitors').catch(() => {})
+        sessionStorage.setItem('portfolio_visited', 'true')
+      }
+    } catch {
+      // ignore storage access errors
+    }
+
     Promise.allSettled([
       api.get('/about'),
       api.get('/skills'),
@@ -262,7 +273,7 @@ export default function HomePage() {
                       />
                     ) : null}
                     <div
-                      className="portrait-placeholder portrait-placeholder-fallback"
+                      className="portrait-placeholder portrait-placeholder-fallback justify-content-center"
                       style={{ display: about.profileImage ? 'none' : 'flex' }}
                     >
                       {about.name?.slice(0, 2).toUpperCase() || 'BN'}
