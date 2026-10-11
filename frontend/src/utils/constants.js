@@ -58,6 +58,7 @@ export const ADMIN_NAV = [
   { name: 'Projects', href: '/admin/projects', icon: 'FolderKanban' },
   { name: 'Skills', href: '/admin/skills', icon: 'Wrench' },
   { name: 'Experience', href: '/admin/experiences', icon: 'Briefcase' },
+  { name: 'Education', href: '/admin/education', icon: 'GraduationCap' },
   { name: 'About', href: '/admin/about', icon: 'User' },
   { name: 'Resume', href: '/admin/resume', icon: 'FileText' },
   { name: 'Messages', href: '/admin/messages', icon: 'Mail' },

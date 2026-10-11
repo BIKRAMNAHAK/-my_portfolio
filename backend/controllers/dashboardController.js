@@ -3,17 +3,19 @@ const Skill = require('../models/Skill');
 const Experience = require('../models/Experience');
 const Message = require('../models/Message');
 const Visitor = require('../models/Visitor');
+const Education = require('../models/Education');
 const asyncHandler = require('../utils/asyncHandler');
 
 const getStats = asyncHandler(async (req, res) => {
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
 
-  const [projects, skills, experiences, messages, unreadMessages, uniqueIps, todayVisitors] =
+  const [projects, skills, experiences, education, messages, unreadMessages, uniqueIps, todayVisitors] =
     await Promise.all([
       Project.countDocuments(),
       Skill.countDocuments(),
       Experience.countDocuments(),
+      Education.countDocuments(),
       Message.countDocuments(),
       Message.countDocuments({ status: 'unread' }),
       Visitor.distinct('ip'),
@@ -28,6 +30,7 @@ const getStats = asyncHandler(async (req, res) => {
       projects,
       skills,
       experiences,
+      education,
       messages,
       unreadMessages,
       visitors: uniqueIps.length,

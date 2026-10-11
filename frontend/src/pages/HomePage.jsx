@@ -12,6 +12,10 @@ import {
   Sparkles,
   Phone,
   CheckCircle2,
+  GraduationCap,
+  Briefcase,
+  Award,
+  BookOpen,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Container, Row, Col, Card, Form, Button, Badge } from 'react-bootstrap'
@@ -60,6 +64,8 @@ export default function HomePage() {
   const [skills, setSkills] = useState([])
   const [projects, setProjects] = useState([])
   const [experiences, setExperiences] = useState([])
+  const [education, setEducation] = useState([])
+  const [journeyTab, setJourneyTab] = useState('experience')
   const [social, setSocial] = useState({})
   const [resume, setResume] = useState(null)
   const [titleIndex, setTitleIndex] = useState(0)
@@ -83,9 +89,10 @@ export default function HomePage() {
       api.get('/skills'),
       api.get('/projects'),
       api.get('/experiences'),
+      api.get('/education'),
       api.get('/resume'),
       api.get('/social'),
-    ]).then(([aboutRes, skillsRes, projectsRes, expRes, resumeRes, socialRes]) => {
+    ]).then(([aboutRes, skillsRes, projectsRes, expRes, eduRes, resumeRes, socialRes]) => {
       if (aboutRes.status === 'fulfilled' && aboutRes.value.data?.data) {
         setAbout(aboutRes.value.data.data)
       }
@@ -97,6 +104,13 @@ export default function HomePage() {
       }
       if (expRes.status === 'fulfilled' && expRes.value.data?.data) {
         setExperiences(expRes.value.data.data)
+      }
+      if (eduRes.status === 'fulfilled' && eduRes.value.data?.data) {
+        const eduList = eduRes.value.data.data
+        setEducation(eduList)
+        if (eduList.length > 0 && (!expRes.value?.data?.data || expRes.value?.data?.data?.length === 0)) {
+          setJourneyTab('education')
+        }
       }
       if (resumeRes.status === 'fulfilled' && resumeRes.value.data?.data) {
         setResume(resumeRes.value.data.data)
@@ -378,46 +392,154 @@ export default function HomePage() {
         </section>
 
         {/* =========================================================================
-            EXPERIENCE SECTION
+            EXPERIENCE & EDUCATION SECTION
             ========================================================================= */}
         <section id="experience" className="section-padding">
           <Container>
             <SectionTitle
-              subtitle="Trajectory"
-              title="Career journey & industry experience."
+              subtitle="Trajectory & Qualifications"
+              title="Career journey, experience & education."
             />
 
-            <div className="mt-4 mx-auto" style={{ maxWidth: '52rem' }}>
-              {experiences.length ? (
-                experiences.map((exp, idx) => (
-                  <Reveal key={exp._id} className="timeline-card mb-4">
-                    <div className="timeline-index">0{idx + 1}</div>
-                    <div>
-                      <div className="small text-primary fw-bold mb-1">
-                        {exp.startDate ? new Date(exp.startDate).getFullYear() : '2022'} —{' '}
-                        {exp.endDate ? new Date(exp.endDate).getFullYear() : 'Present'}
+            {/* Tab Switcher: Work Experience vs Education */}
+            <div className="d-flex justify-content-center mt-4 mb-4">
+              <div
+                className="p-1 rounded-pill d-inline-flex gap-1"
+                style={{
+                  backgroundColor: 'var(--bg-secondary)',
+                  border: '1px solid var(--border-color)',
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setJourneyTab('experience')}
+                  className={`btn btn-sm rounded-pill px-4 py-2 fw-semibold border-0 d-inline-flex align-items-center gap-2 ${
+                    journeyTab === 'experience' ? 'action-primary' : 'text-secondary'
+                  }`}
+                  style={{
+                    backgroundColor: journeyTab === 'experience' ? undefined : 'transparent',
+                    fontSize: '0.88rem',
+                  }}
+                >
+                  <Briefcase size={16} />
+                  <span>Work Experience</span>
+                  {experiences.length > 0 && (
+                    <Badge
+                      bg={journeyTab === 'experience' ? 'light' : 'secondary'}
+                      className={journeyTab === 'experience' ? 'text-dark ms-1' : 'ms-1'}
+                    >
+                      {experiences.length}
+                    </Badge>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setJourneyTab('education')}
+                  className={`btn btn-sm rounded-pill px-4 py-2 fw-semibold border-0 d-inline-flex align-items-center gap-2 ${
+                    journeyTab === 'education' ? 'action-primary' : 'text-secondary'
+                  }`}
+                  style={{
+                    backgroundColor: journeyTab === 'education' ? undefined : 'transparent',
+                    fontSize: '0.88rem',
+                  }}
+                >
+                  <GraduationCap size={16} />
+                  <span>Education & Qualifications</span>
+                  {education.length > 0 && (
+                    <Badge
+                      bg={journeyTab === 'education' ? 'light' : 'secondary'}
+                      className={journeyTab === 'education' ? 'text-dark ms-1' : 'ms-1'}
+                    >
+                      {education.length}
+                    </Badge>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="mx-auto" style={{ maxWidth: '52rem' }}>
+              {journeyTab === 'experience' ? (
+                experiences.length ? (
+                  experiences.map((exp, idx) => (
+                    <Reveal key={exp._id} className="timeline-card mb-4">
+                      <div className="timeline-index">0{idx + 1}</div>
+                      <div>
+                        <div className="small text-primary fw-bold mb-1">
+                          {exp.startDate ? new Date(exp.startDate).getFullYear() : '2022'} —{' '}
+                          {exp.endDate ? new Date(exp.endDate).getFullYear() : 'Present'}
+                        </div>
+                        <h4 className="fw-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+                          {exp.position}{' '}
+                          <span className="text-secondary fw-normal fs-6">/ {exp.company}</span>
+                        </h4>
+                        <p className="text-secondary my-3" style={{ lineHeight: 1.65 }}>
+                          {exp.description}
+                        </p>
+                        <div className="d-flex flex-wrap gap-1 mt-2">
+                          {exp.technologies?.map((tech) => (
+                            <span className="tag" key={tech}>
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                      <h4 className="fw-bold mb-1" style={{ color: 'var(--text-primary)' }}>
-                        {exp.position}{' '}
-                        <span className="text-secondary fw-normal fs-6">/ {exp.company}</span>
-                      </h4>
-                      <p className="text-secondary my-3" style={{ lineHeight: 1.65 }}>
-                        {exp.description}
-                      </p>
-                      <div className="d-flex flex-wrap gap-1 mt-2">
-                        {exp.technologies?.map((tech) => (
-                          <span className="tag" key={tech}>
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </Reveal>
-                ))
+                    </Reveal>
+                  ))
+                ) : (
+                  <div className="empty-card text-center py-5">
+                    <Briefcase size={36} className="text-muted opacity-50 mb-2" />
+                    <p className="mb-0">Milestones and work history will appear here once added.</p>
+                  </div>
+                )
               ) : (
-                <div className="empty-card">
-                  Milestones and work history will appear here.
-                </div>
+                education.length ? (
+                  education.map((edu, idx) => (
+                    <Reveal key={edu._id} className="timeline-card mb-4">
+                      <div className="timeline-index">0{idx + 1}</div>
+                      <div>
+                        <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-1">
+                          <div className="small text-primary fw-bold">
+                            {edu.startDate ? new Date(edu.startDate).getFullYear() : ''} —{' '}
+                            {edu.current
+                              ? 'Pursuing'
+                              : edu.endDate
+                              ? new Date(edu.endDate).getFullYear()
+                              : 'Completed'}
+                          </div>
+                          {edu.grade && (
+                            <Badge bg="info" className="text-dark fw-bold d-inline-flex align-items-center gap-1">
+                              <Award size={12} />
+                              <span>{edu.grade}</span>
+                            </Badge>
+                          )}
+                        </div>
+                        <h4 className="fw-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+                          {edu.degree}
+                        </h4>
+                        <div className="text-secondary fw-semibold small mb-2 d-flex align-items-center gap-2">
+                          <span>{edu.institution}</span>
+                          {edu.fieldOfStudy && (
+                            <>
+                              <span>&bull;</span>
+                              <span className="text-muted">{edu.fieldOfStudy}</span>
+                            </>
+                          )}
+                        </div>
+                        {edu.description && (
+                          <p className="text-secondary my-2" style={{ lineHeight: 1.65 }}>
+                            {edu.description}
+                          </p>
+                        )}
+                      </div>
+                    </Reveal>
+                  ))
+                ) : (
+                  <div className="empty-card text-center py-5">
+                    <GraduationCap size={36} className="text-muted opacity-50 mb-2" />
+                    <p className="mb-0">Academic qualifications will appear here once added in the admin panel.</p>
+                  </div>
+                )
               )}
             </div>
           </Container>

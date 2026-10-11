@@ -17,6 +17,7 @@ const resumesRoutes = require('./routes/resumesRoutes');
 const socialRoutes = require('./routes/socialRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const visitorRoutes = require('./routes/visitorRoutes');
+const educationRoutes = require('./routes/educationRoutes');
 
 const app = express();
 
@@ -61,6 +62,7 @@ app.use(['/api/resumes', '/resumes'], resumesRoutes);
 app.use(['/api/social', '/social'], socialRoutes);
 app.use(['/api/dashboard', '/dashboard'], dashboardRoutes);
 app.use(['/api/visitors', '/visitors'], visitorRoutes);
+app.use(['/api/education', '/education'], educationRoutes);
 
 app.use((req, res, next) => {
   res.status(404).json({ success: false, message: `Route not found: ${req.originalUrl}` });

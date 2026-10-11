@@ -11,6 +11,7 @@ const DashboardPage = lazy(() => import('../admin/pages/DashboardPage'))
 const ProjectsPage = lazy(() => import('../admin/pages/ProjectsPage'))
 const SkillsPage = lazy(() => import('../admin/pages/SkillsPage'))
 const ExperiencesPage = lazy(() => import('../admin/pages/ExperiencesPage'))
+const EducationPage = lazy(() => import('../admin/pages/EducationPage'))
 const AboutPage = lazy(() => import('../admin/pages/AboutPage'))
 const SocialPage = lazy(() => import('../admin/pages/SocialPage'))
 const MessagesPage = lazy(() => import('../admin/pages/MessagesPage'))
@@ -64,6 +65,7 @@ export default function AppRoutes() {
           <Route path="projects" element={<ProjectsPage />} />
           <Route path="skills" element={<SkillsPage />} />
           <Route path="experiences" element={<ExperiencesPage />} />
+          <Route path="education" element={<EducationPage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="social" element={<SocialPage />} />
           <Route path="messages" element={<MessagesPage />} />

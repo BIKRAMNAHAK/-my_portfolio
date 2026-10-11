@@ -289,6 +289,14 @@ export default function DashboardPage() {
                 <ArrowUpRight size={15} />
               </Link>
               <Link
+                to="/admin/education"
+                className="btn btn-sm btn-outline-secondary text-start d-flex justify-content-between align-items-center p-2 rounded-3"
+                style={{ borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
+              >
+                <span>Manage education & qualifications</span>
+                <ArrowUpRight size={15} />
+              </Link>
+              <Link
                 to="/admin/about"
                 className="btn btn-sm btn-outline-secondary text-start d-flex justify-content-between align-items-center p-2 rounded-3"
                 style={{ borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
