@@ -14,6 +14,7 @@ import {
 import { Button, Form, Row, Col, Card, Badge, InputGroup } from 'react-bootstrap'
 import toast from 'react-hot-toast'
 import api, { getUploadUrl } from '../../services/apis/api_config'
+import { compressImageToBase64 } from '../../utils/imageCompressor'
 
 export default function AboutPage() {
   const [loading, setLoading] = useState(false)
@@ -83,11 +84,24 @@ export default function AboutPage() {
     }))
   }
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0]
     if (file) {
-      setImageFile(file)
-      setImagePreview(URL.createObjectURL(file))
+      if (file.size > 12 * 1024 * 1024) {
+        return toast.error('Please choose an image under 12MB')
+      }
+      const loadToast = toast.loading('Optimizing image...')
+      try {
+        const base64 = await compressImageToBase64(file, 800, 0.85)
+        toast.dismiss(loadToast)
+        setFormData((prev) => ({ ...prev, profileImage: base64 }))
+        setImagePreview(base64)
+        setImageFile(null)
+        toast.success('Image ready! Click Save to apply.')
+      } catch (err) {
+        toast.dismiss(loadToast)
+        toast.error('Could not process image file')
+      }
     }
   }
 
@@ -100,34 +114,27 @@ export default function AboutPage() {
 
     setLoading(true)
     try {
-      // Use FormData to support image upload and text fields together
-      const fd = new FormData()
-      fd.append('name', formData.name.trim())
-      fd.append('professionalTitle', formData.professionalTitle.trim())
-      fd.append('currentRole', formData.currentRole.trim())
-      fd.append('location', formData.location.trim())
-      fd.append('email', formData.email.trim())
-      fd.append('phone', formData.phone.trim())
-      fd.append('bio', formData.bio.trim())
-      fd.append('passion', formData.passion.trim())
-      fd.append('yearsExperience', Number(formData.yearsExperience) || 0)
-      fd.append('projectsCompleted', Number(formData.projectsCompleted) || 0)
-      fd.append('technologiesCount', Number(formData.technologiesCount) || 0)
-
       const titles = formData.animatedTitles
         ? formData.animatedTitles.split(',').map((t) => t.trim()).filter(Boolean)
         : []
-      fd.append('animatedTitles', JSON.stringify(titles))
 
-      if (imageFile) {
-        fd.append('profileImage', imageFile)
-      } else if (formData.profileImage) {
-        fd.append('profileImage', formData.profileImage)
+      const payload = {
+        name: formData.name.trim(),
+        professionalTitle: formData.professionalTitle.trim(),
+        currentRole: formData.currentRole.trim(),
+        location: formData.location.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        bio: formData.bio.trim(),
+        passion: formData.passion.trim(),
+        yearsExperience: Number(formData.yearsExperience) || 0,
+        projectsCompleted: Number(formData.projectsCompleted) || 0,
+        technologiesCount: Number(formData.technologiesCount) || 0,
+        animatedTitles: titles,
+        profileImage: formData.profileImage || '',
       }
 
-      const res = await api.put('/about', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
+      const res = await api.put('/about', payload)
 
       if (res.data?.success) {
         toast.success('About details updated successfully!')
@@ -184,9 +191,10 @@ export default function AboutPage() {
                       src={imagePreview}
                       alt="Profile preview"
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={() => setImagePreview('')}
                     />
                   ) : (
-                    <div className="w-100 h-100 d-grid place-items-center text-muted">
+                    <div className="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
                       <ImageIcon size={48} className="opacity-50" />
                     </div>
                   )}
@@ -199,7 +207,7 @@ export default function AboutPage() {
                   {formData.professionalTitle || 'Full Stack Developer'}
                 </p>
 
-                <div className="d-grid">
+                <div className="d-grid gap-2">
                   <Form.Label
                     htmlFor="profile-image-upload"
                     className="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center gap-2 mb-0"
@@ -210,7 +218,7 @@ export default function AboutPage() {
                     }}
                   >
                     <Upload size={15} />
-                    <span>Change Profile Picture</span>
+                    <span>Upload Image from Device</span>
                   </Form.Label>
                   <input
                     id="profile-image-upload"
@@ -219,6 +227,24 @@ export default function AboutPage() {
                     className="d-none"
                     onChange={handleFileChange}
                   />
+
+                  <div className="text-start mt-2">
+                    <Form.Label className="small text-muted mb-1" style={{ fontSize: '0.78rem' }}>
+                      Or paste Image URL:
+                    </Form.Label>
+                    <Form.Control
+                      size="sm"
+                      name="profileImage"
+                      placeholder="https://..."
+                      value={formData.profileImage?.startsWith('data:') ? '' : (formData.profileImage || '')}
+                      onChange={(e) => {
+                        const val = e.target.value
+                        setFormData((prev) => ({ ...prev, profileImage: val }))
+                        setImagePreview(val)
+                      }}
+                      style={{ fontSize: '0.8rem', borderRadius: '0.6rem' }}
+                    />
+                  </div>
                 </div>
               </Card.Body>
             </Card>

@@ -25,10 +25,11 @@ export default function BackToTop() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 z-40 p-3 rounded-xl gradient-bg text-white shadow-lg shadow-primary-500/30 cursor-pointer"
+          className="position-fixed bottom-0 end-0 m-4 z-3 rounded-circle gradient-bg text-white shadow d-flex align-items-center justify-content-center border-0 cursor-pointer"
+          style={{ width: '44px', height: '44px' }}
           aria-label="Back to top"
         >
-          <ArrowUp className="w-5 h-5" />
+          <ArrowUp size={20} />
         </motion.button>
       )}
     </AnimatePresence>

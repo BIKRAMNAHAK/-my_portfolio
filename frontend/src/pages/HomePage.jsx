@@ -209,12 +209,12 @@ export default function HomePage() {
                   </div>
 
                   {/* Social Buttons */}
-                  <div className="d-flex gap-2 mt-4 pt-2">
+                  <div className="d-flex align-items-center gap-2 mt-4 pt-2">
                     {about.email && (
                       <a
                         aria-label="Email"
                         href={`mailto:${about.email}`}
-                        className="social-button"
+                        className="social-button d-inline-flex align-items-center justify-content-center"
                       >
                         <Mail size={18} />
                       </a>
@@ -225,7 +225,7 @@ export default function HomePage() {
                         href={social.github}
                         target="_blank"
                         rel="noreferrer"
-                        className="social-button"
+                        className="social-button d-inline-flex align-items-center justify-content-center"
                       >
                         <Github size={18} />
                       </a>
@@ -236,7 +236,7 @@ export default function HomePage() {
                         href={social.linkedin}
                         target="_blank"
                         rel="noreferrer"
-                        className="social-button"
+                        className="social-button d-inline-flex align-items-center justify-content-center"
                       >
                         <Linkedin size={18} />
                       </a>
@@ -252,19 +252,26 @@ export default function HomePage() {
                     {about.profileImage ? (
                       <img
                         src={getUploadUrl(about.profileImage)}
-                        alt={about.name}
+                        alt={about.name || 'Profile'}
                         className="portrait"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none'
+                          const fb = e.currentTarget.parentElement?.querySelector('.portrait-placeholder-fallback')
+                          if (fb) fb.style.display = 'flex'
+                        }}
                       />
-                    ) : (
-                      <div className="portrait-placeholder">
-                        {about.name?.slice(0, 2).toUpperCase() || 'BN'}
-                      </div>
-                    )}
-                    <div className="floating-note">
+                    ) : null}
+                    <div
+                      className="portrait-placeholder portrait-placeholder-fallback"
+                      style={{ display: about.profileImage ? 'none' : 'flex' }}
+                    >
+                      {about.name?.slice(0, 2).toUpperCase() || 'BN'}
+                    </div>
+                    <div className="floating-note d-inline-flex align-items-center">
                       <span className="pulse-dot" />
                       Building thoughtful products
                     </div>
-                    <div className="code-tag">&lt;developer /&gt;</div>
+                    <div className="code-tag d-inline-flex align-items-center">&lt;developer /&gt;</div>
                   </div>
                 </Reveal>
               </Col>
@@ -568,14 +575,14 @@ export default function HomePage() {
                 {about.email && (
                   <div className="d-flex align-items-center gap-3 mb-3">
                     <div
-                      className="rounded-3 d-grid place-items-center text-primary"
+                      className="rounded-3 d-flex align-items-center justify-content-center text-primary flex-shrink-0"
                       style={{
-                        width: '40px',
-                        height: '40px',
+                        width: '42px',
+                        height: '42px',
                         backgroundColor: 'rgba(139, 92, 246, 0.12)',
                       }}
                     >
-                      <Mail size={18} />
+                      <Mail size={20} />
                     </div>
                     <div>
                       <div className="small text-muted">Direct Email</div>
@@ -593,14 +600,14 @@ export default function HomePage() {
                 {about.phone && (
                   <div className="d-flex align-items-center gap-3 mb-3">
                     <div
-                      className="rounded-3 d-grid place-items-center text-primary"
+                      className="rounded-3 d-flex align-items-center justify-content-center text-primary flex-shrink-0"
                       style={{
-                        width: '40px',
-                        height: '40px',
+                        width: '42px',
+                        height: '42px',
                         backgroundColor: 'rgba(139, 92, 246, 0.12)',
                       }}
                     >
-                      <Phone size={18} />
+                      <Phone size={20} />
                     </div>
                     <div>
                       <div className="small text-muted">Phone Number</div>

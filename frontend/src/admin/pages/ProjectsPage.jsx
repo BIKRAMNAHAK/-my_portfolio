@@ -13,6 +13,7 @@ import {
   Github,
   Globe,
   Image as ImageIcon,
+  Upload,
 } from 'lucide-react'
 import { Modal, Button, Form, Row, Col, Badge, Card, Table, InputGroup } from 'react-bootstrap'
 import toast from 'react-hot-toast'
@@ -24,6 +25,7 @@ import {
   updateProjectAsync,
 } from '../../services/apis/projectsManagement'
 import { getUploadUrl } from '../../services/apis/api_config'
+import { compressImageToBase64 } from '../../utils/imageCompressor'
 
 export default function ProjectsPage() {
   const dispatch = useDispatch()
@@ -478,16 +480,56 @@ export default function ProjectsPage() {
                 </Form.Group>
               </Col>
 
-              {/* Image URL */}
+              {/* Image URL & Upload */}
               <Col md={12}>
                 <Form.Group>
-                  <Form.Label className="field-label">Project Image / Banner URL</Form.Label>
+                  <Form.Label className="field-label d-flex justify-content-between align-items-center">
+                    <span>Project Image / Banner</span>
+                    <label
+                      htmlFor="project-img-upload"
+                      className="btn btn-xs btn-outline-primary py-0 px-2 small mb-0 d-inline-flex align-items-center gap-1"
+                      style={{ cursor: 'pointer', fontSize: '0.78rem' }}
+                    >
+                      <Upload size={13} />
+                      <span>Upload from Device</span>
+                    </label>
+                  </Form.Label>
+                  <input
+                    id="project-img-upload"
+                    type="file"
+                    accept="image/*"
+                    className="d-none"
+                    onChange={async (e) => {
+                      const file = e.target.files[0]
+                      if (file) {
+                        const loadToast = toast.loading('Optimizing project image...')
+                        try {
+                          const base64 = await compressImageToBase64(file, 900, 0.85)
+                          toast.dismiss(loadToast)
+                          setFormData((prev) => ({ ...prev, image: base64 }))
+                          toast.success('Project image ready!')
+                        } catch {
+                          toast.dismiss(loadToast)
+                          toast.error('Failed to process image')
+                        }
+                      }
+                    }}
+                  />
                   <Form.Control
                     name="image"
-                    placeholder="https://images.unsplash.com/... or uploaded path"
-                    value={formData.image}
+                    placeholder="https://images.unsplash.com/... or uploaded Base64 image"
+                    value={formData.image?.startsWith('data:') ? '(Uploaded Device Image)' : formData.image}
                     onChange={handleInputChange}
                   />
+                  {formData.image && (
+                    <div className="mt-2 rounded-3 overflow-hidden border" style={{ maxHeight: '120px' }}>
+                      <img
+                        src={getUploadUrl(formData.image)}
+                        alt="Project preview"
+                        style={{ width: '100%', height: '120px', objectFit: 'cover' }}
+                      />
+                    </div>
+                  )}
                 </Form.Group>
               </Col>
 

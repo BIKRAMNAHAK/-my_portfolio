@@ -105,8 +105,10 @@ export default function Navbar() {
             <div className="d-flex align-items-center gap-2">
               <button
                 onClick={toggleTheme}
-                className="btn btn-sm rounded-circle p-2"
+                className="btn btn-sm rounded-circle p-0 d-flex align-items-center justify-content-center"
                 style={{
+                  width: '38px',
+                  height: '38px',
                   color: 'var(--text-secondary)',
                   backgroundColor: 'var(--bg-card)',
                   border: '1px solid var(--border-color)',
@@ -118,8 +120,8 @@ export default function Navbar() {
 
               <button
                 onClick={() => setMobileOpen(true)}
-                className="btn btn-sm d-md-none p-2 border-0"
-                style={{ color: 'var(--text-primary)' }}
+                className="btn btn-sm d-md-none p-0 d-flex align-items-center justify-content-center border-0"
+                style={{ width: '38px', height: '38px', color: 'var(--text-primary)' }}
                 aria-label="Open menu"
               >
                 <Menu size={22} />

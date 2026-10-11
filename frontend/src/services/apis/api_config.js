@@ -32,7 +32,7 @@ api.interceptors.response.use(
 
 export const getUploadUrl = (path) => {
   if (!path) return '';
-  if (path.startsWith('http')) return path;
+  if (path.startsWith('http') || path.startsWith('data:') || path.startsWith('blob:')) return path;
   const base = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
   return `${base}${path}`;
 };

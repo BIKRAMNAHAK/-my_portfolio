@@ -42,7 +42,9 @@ const updateAbout = asyncHandler(async (req, res) => {
   if (data.technologiesCount !== undefined) data.technologiesCount = Number(data.technologiesCount);
 
   if (req.file) {
-    if (about?.profileImage) deleteFile(about.profileImage);
+    if (about?.profileImage && !about.profileImage.startsWith('data:') && !about.profileImage.startsWith('http')) {
+      deleteFile(about.profileImage);
+    }
     data.profileImage = getPublicPath('profiles', req.file.filename);
   }
 
